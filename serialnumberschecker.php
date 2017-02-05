@@ -17,6 +17,10 @@ class SerialNumbersChecker
 	private static $template_path = "html/";
 	private static $table_name = "serial_numbers";
 	
+	// Import
+	private static $import_file = "data/serial.csv";
+	private static $serial_key = 1;
+	
 	public function init()
 	{
 		$this->includes();
@@ -41,14 +45,37 @@ class SerialNumbersChecker
 		// Install SQL Table
 		\serialnumberchecker\Adapter\SerialDatabase::install();
 		
-		// Add some options
-		add_option("snc_contact_url", "");
-		add_option("snc_contact_email", "");
+		// Add some options TODO
+		add_option("snc_contact_url", "http://www.veldt.xyz/en/contact/");
+		add_option("snc_contact_email", "contact@veldt.xyz");
+		
+		// Create Page
+		$postarr = array(
+			'post_content' => "[snc_result get=serial/]",
+			'post_title' => "Serial Check",
+			'post_name' => 'check',
+			'post_status' => 'publish',
+			'post_type' => 'page',
+			'comment_status' => 'closed',
+			'ping_status' => 'closed',
+		);
+		
+		$id = wp_insert_post($postarr);
+		if ($id > 0)
+			add_option("snc_post_id", $id);
 	}
 	
 	public static function deactivate()
 	{
 		\serialnumberchecker\Adapter\SerialDatabase::uninstall();
+		
+		$post_id = (int)get_option('snc_post_id', 0);
+		if ($post_id > 0)
+			wp_delete_post($post_id, true);
+		
+		delete_option("snc_contact_url");
+		delete_option("snc_contact_email");
+		delete_option("snc_post_id");
 	}
 	
 	public function action_links($links, $file)
@@ -130,6 +157,9 @@ class SerialNumbersChecker
 				self::exportFile();
 				$show_list = false;
 				break;
+			case 'import':
+				self::importFile();
+				break;
 		}
 		
 		if ($show_list)
@@ -139,7 +169,7 @@ class SerialNumbersChecker
 	public static function showSerialList()
 	{
 		$myListTable = new \serialnumberchecker\SerialNumberTable();
-		echo '<div class="wrap"><h2>Serial List Table<small> - <a href="'.admin_url( 'admin.php?page=serial_list&action=add' ).'">Add Serial</a> - <a href="'.admin_url( 'admin.php?page=serial_list&action=export' ).'">Export Data</a></small></h2>';
+		echo '<div class="wrap"><h2>Serial List Table<small> - <a href="'.admin_url( 'admin.php?page=serial_list&action=add' ).'">Add Serial</a> - <a href="'.admin_url( 'admin.php?page=serial_list&action=import' ).'">Import File</a> - <a href="'.admin_url( 'admin.php?page=serial_list&action=export' ).'">Export Data</a></small></h2>';
 		$myListTable->prepare_items();
 		echo '<form method="post">
 		<input type="hidden" name="page" value="serial_list" />';
@@ -189,6 +219,80 @@ class SerialNumbersChecker
 			echo '<div class="updated"><p>Delete done !</p></div>';
 		else
 			echo '<div class="updated error"><p>Delete failed</p></div>';
+	}
+	
+	public static function importFile()
+	{
+		$row = 0;
+		$all_data = array();
+		if (($handle = fopen(plugin_dir_path( __FILE__ ) . self::$import_file, "r")) !== FALSE)
+		{
+			while (($data = fgetcsv($handle, 0, ";")) !== FALSE)
+			{
+				$row++;
+				if ($row == 1 || !isset($data[self::$serial_key]))
+					continue;
+				
+				$all_data[trim($data[self::$serial_key])] = $data;
+			}
+			
+			fclose($handle);
+		}
+
+		if (!empty($all_data))
+		{
+			// Get existing serials
+			$serials = array_keys($all_data);
+			$adapter = new \serialnumberchecker\Adapter\SerialDatabase();
+			$existing_data = $adapter->getAllBySerials($serials);
+
+			// Update existing
+			$update_data = array();
+			if (!empty($existing_data))
+			{
+				$existing_serials = array_keys($existing_data);
+				$update_serials = array_intersect($existing_serials, $serials);
+				foreach ($update_serials as $serial)
+				{
+					if ($existing_data[$serial]['customer'] == $all_data[$serial][3] && $existing_data[$serial]['product_model'] == $all_data[$serial][2])
+						continue;
+					
+					$tmp = array(
+						'customer' => $all_data[$serial][3],
+						'product_model' => $all_data[$serial][2],
+						'id' => $existing_data[$serial]['id'],
+					);
+						
+					$update_data[] = $tmp;
+				}
+
+				$adapter->updateItems($update_data);
+
+				$new_serials = array_diff($serials, $existing_serials);
+			} else {
+				$new_serials = array_keys($all_data);
+			}
+			
+			// Add missing
+			foreach ($new_serials as $serial)
+			{
+				$tmp = array(
+					'serial' => $serial,
+					'customer' => $all_data[$serial][3],
+					'product_model' => $all_data[$serial][2],
+					'state' => 1,
+				);
+				$adapter->insert($tmp);
+			}
+			
+			// Display stats
+			echo '<div class="updated"><p>
+				Import results :<br>
+				New data : '.count($new_serials).'<br>
+				Updated data : '.count($update_data).'<br>
+			</p></div>';
+		} else
+			echo '<div class="updated error"><p>No data to import !</p></div>';
 	}
 	
 	public static function exportFile()

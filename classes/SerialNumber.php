@@ -34,7 +34,7 @@ class SerialNumber
 	{
 		if (!empty($serial))
 		{
-			$data = $this->adapter->loadBtSerial($serial);
+			$data = $this->adapter->loadBySerial($serial);
 			$this->init($data);
 		}
 	}

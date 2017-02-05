@@ -95,6 +95,26 @@ class SerialDatabase implements SerialAdapterInterface
 		return $data;
 	}
 	
+	public function getAllBySerials($serials, $use_serial_as_key = true)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . self::$table_name;
+		
+		$sql = "SELECT * FROM $table_name where serial IN ('".implode("', '", $serials)."')";
+		
+		$data = $wpdb->get_results($sql, ARRAY_A);
+		
+		if ($use_serial_as_key)
+		{
+			$tmp = array();
+			foreach ($data as $d)
+				$tmp[$d['serial']] = $d;
+			$data = $tmp;
+		}
+		
+		return $data;
+	}
+	
 	protected function generate_count_no_limit()
 	{
 		global $wpdb;
@@ -113,6 +133,17 @@ class SerialDatabase implements SerialAdapterInterface
 		
 		$updated = $wpdb->update( $table_name, $data, array('id' => $id) );
 		return $updated !== false;
+	}
+	
+	public function updateItems($data)
+	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . self::$table_name;
+		
+		foreach ($data as $d)
+		{
+			$updated = $wpdb->update( $table_name, $d, array('id' => $d['id']) );
+		}
 	}
 	
 	public function insert($data)
