@@ -17,6 +17,7 @@ class SerialNumber
 	public $serial;
 	public $date_add;
 	public $state;
+	public $date_manufactured;
 	
 	public $ip_visited;
 	public $date_visited;
@@ -96,6 +97,7 @@ class SerialNumber
 			'state' => $this->state,
 			'ip_visited' => $this->ip_visited,
 			'date_visited' => $this->date_visited,
+			'date_manufactured' => $this->date_manufactured,
 		);
 		
 		if ($this->id > 0)
@@ -143,6 +145,7 @@ class SerialNumber
 			'serial' => array('label' => "Serial", 'value' => !empty($this->serial)? $this->serial: ""),
 			'customer' => array('label' => "Customer", 'value' => $this->getCustomerData('name', "")),
 			'product_model' => array('label' => "Product Model", 'value' => $this->getProductData('model', "")),
+			'date_manufactured' => array('label' => "Date Manufactured", 'value' => $this->data_manufactured),
 		);
 		
 		$html = "";
