@@ -276,11 +276,14 @@ class SerialNumbersChecker
 			// Add missing
 			foreach ($new_serials as $serial)
 			{
+				$state = isset($all_data[$serial][5])? (int)$all_data[$serial][5]: 1;
+				
 				$tmp = array(
 					'serial' => $serial,
 					'customer' => $all_data[$serial][3],
 					'product_model' => $all_data[$serial][2],
-					'state' => 1,
+					'date_manufactured' => isset($all_data[$serial][4])? $all_data[$serial][2]: "",
+					'state' => $state,
 				);
 				$adapter->insert($tmp);
 			}
