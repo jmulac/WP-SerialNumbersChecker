@@ -23,6 +23,7 @@ class SerialNumberTable extends \WP_List_Table
   			'state' 		=> 'State',
   			'date_add'		=> 'Date Add',
   			'date_visited'	=> 'Date Visited',
+			'date_manufactured' => 'Date Manufactured',
   		);
   		
   		return $columns;
@@ -94,6 +95,14 @@ class SerialNumberTable extends \WP_List_Table
 	{
 		if (isset($item['date_visited']))
 			return date('d M Y H:i:s', strtotime($item['date_visited']));
+		else
+			return "";
+	}
+	
+	public function column_date_manufactured($item)
+	{
+		if (isset($item['date_manufactured']))
+			return date('d M Y H:i:s', strtotime($item['date_manufactured']));
 		else
 			return "";
 	}
