@@ -257,10 +257,14 @@ class SerialNumbersChecker
 					if ($existing_data[$serial]['customer'] == $all_data[$serial][3] && $existing_data[$serial]['product_model'] == $all_data[$serial][2])
 						continue;
 					
+					$state = isset($all_data[$serial][5])? (int)$all_data[$serial][5]: 1;
+					
 					$tmp = array(
 						'customer' => $all_data[$serial][3],
 						'product_model' => $all_data[$serial][2],
 						'id' => $existing_data[$serial]['id'],
+						'date_manufactured' => isset($all_data[$serial][4])? $all_data[$serial][2]: "",
+						'state' => $state,
 					);
 						
 					$update_data[] = $tmp;
@@ -313,7 +317,8 @@ class SerialNumbersChecker
 			'State',
 			'Date Add',
 			'Date Visited',
-			'IP Visited'
+			'IP Visited',
+			'Date Manufactured',
 		);
 		
 		$csv_data = array();
@@ -327,6 +332,7 @@ class SerialNumbersChecker
 				$values['date_add'],
 				$values['date_visited'],
 				$values['ip_visited'],
+				isset($values['date_manufactured'])? $values['date_manufactured']: "",
 			);
 		}
 		unset($data);
