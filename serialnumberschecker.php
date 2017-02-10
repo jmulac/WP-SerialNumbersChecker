@@ -191,11 +191,11 @@ class SerialNumbersChecker
 		{
 			// process form data
 			$serial->init($_POST);
-			
 			if (($error = $serial->checkData()) !== true)
 			{
 				echo '<div class="updated error"><p>'.$error.'</p></div>';
 			} else {
+				
 				$result = $serial->save();
 				if ($result)
 					echo '<div class="updated"><p>Update done ! '.$list_url.'</p></div>';

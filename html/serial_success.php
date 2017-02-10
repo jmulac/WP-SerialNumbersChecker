@@ -6,4 +6,7 @@
 	<li><strong>Serial :</strong> <?php echo $serial->serial; ?></li>
 	<li><strong>Model :</strong> <?php echo $serial->getProductData('model'); ?></li>
 	<li><strong>Customer :</strong> <?php echo $serial->getCustomerData('name'); ?></li>
+	<?php if (!empty($serial->date_manufactured)): ?>
+	<li><strong>Date Manufactured :</strong> <?php echo $serial->date_manufactured; ?></li>
+	<?php endif; ?>
 </ul>

@@ -71,7 +71,7 @@ class SerialNumber
 	
 	public function checkData()
 	{
-		if (!empty($this->serial))
+		if (!empty($this->serial) && empty($this->id))
 		{
 			$data = $this->adapter->loadBySerial($this->serial);
 			if (!empty($data))
@@ -145,7 +145,7 @@ class SerialNumber
 			'serial' => array('label' => "Serial", 'value' => !empty($this->serial)? $this->serial: ""),
 			'customer' => array('label' => "Customer", 'value' => $this->getCustomerData('name', "")),
 			'product_model' => array('label' => "Product Model", 'value' => $this->getProductData('model', "")),
-			'date_manufactured' => array('label' => "Date Manufactured", 'value' => $this->data_manufactured),
+			'date_manufactured' => array('label' => "Date Manufactured", 'value' => $this->date_manufactured),
 		);
 		
 		$html = "";
