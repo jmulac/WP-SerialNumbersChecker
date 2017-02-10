@@ -254,16 +254,26 @@ class SerialNumbersChecker
 				$update_serials = array_intersect($existing_serials, $serials);
 				foreach ($update_serials as $serial)
 				{
-					if ($existing_data[$serial]['customer'] == $all_data[$serial][3] && $existing_data[$serial]['product_model'] == $all_data[$serial][2])
-						continue;
+					$date_manufactured = isset($all_data[$serial][4])? $all_data[$serial][4]: "";
 					
-					$state = isset($all_data[$serial][5])? (int)$all_data[$serial][5]: 1;
+					// State
+					$state = 1;
+					$state_row = isset($all_data[$serial][5])? $all_data[$serial][5]: "";
+					$state_row = trim($state_row);
+					if ($state_row != "")
+						$state = (int)$state_row;
+					
+					if ($existing_data[$serial]['customer'] == $all_data[$serial][3] && 
+						$existing_data[$serial]['product_model'] == $all_data[$serial][2] &&
+						$existing_data[$serial]['date_manufactured'] == $date_manufactured && 
+						$existing_data[$serial]['state'] == $state)
+						continue;
 					
 					$tmp = array(
 						'customer' => $all_data[$serial][3],
 						'product_model' => $all_data[$serial][2],
 						'id' => $existing_data[$serial]['id'],
-						'date_manufactured' => isset($all_data[$serial][4])? $all_data[$serial][2]: "",
+						'date_manufactured' => $date_manufactured,
 						'state' => $state,
 					);
 						
@@ -286,7 +296,7 @@ class SerialNumbersChecker
 					'serial' => $serial,
 					'customer' => $all_data[$serial][3],
 					'product_model' => $all_data[$serial][2],
-					'date_manufactured' => isset($all_data[$serial][4])? $all_data[$serial][2]: "",
+					'date_manufactured' => isset($all_data[$serial][4])? $all_data[$serial][4]: "",
 					'state' => $state,
 				);
 				$adapter->insert($tmp);

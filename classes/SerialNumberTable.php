@@ -99,14 +99,6 @@ class SerialNumberTable extends \WP_List_Table
 			return "";
 	}
 	
-	public function column_date_manufactured($item)
-	{
-		if (isset($item['date_manufactured']))
-			return date('d M Y H:i:s', strtotime($item['date_manufactured']));
-		else
-			return "";
-	}
-	
 	public function column_state($item)
 	{
 		if (isset($item['state']))

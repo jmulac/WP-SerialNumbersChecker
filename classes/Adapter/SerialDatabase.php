@@ -28,7 +28,7 @@ class SerialDatabase implements SerialAdapterInterface
 		ip_visited varchar(15) NULL DEFAULT NULL,
 		date_visited datetime NULL DEFAULT NULL,
 		state  smallint(2) NOT NULL,
-		date_manufactured datetime NULL DEFAULT NULL,
+		date_manufactured varchar(255) DEFAULT NULL,
 		PRIMARY KEY  (id),
 		KEY serial (serial),
 		UNIQUE KEY serialU (serial)
@@ -132,10 +132,10 @@ class SerialDatabase implements SerialAdapterInterface
 		global $wpdb;
 		$table_name = $wpdb->prefix . self::$table_name;
 		
-		if (isset($data['date_manufactured']))
+		/*if (isset($data['date_manufactured']))
 		{
 			$data['date_manufactured'] = date('Y-m-d H:i:s', strtotime($data['date_manufactured']));
-		}
+		}*/
 		
 		$updated = $wpdb->update( $table_name, $data, array('id' => $id) );
 		return $updated !== false;
@@ -163,10 +163,10 @@ class SerialDatabase implements SerialAdapterInterface
 			'product_model' => isset($data['product_model'])? $data['product_model']: "",
 			'date_add' => date('Y-m-d H:i:s'),
 			'state' => $data['state'],
-			'date_manufactured' => isset($data['date_manufactured'])? date('Y-m-d H:i:s', strtotime($data['date_manufactured'])): null,
+			'date_manufactured' => isset($data['date_manufactured'])? $data['date_manufactured']/*date('Y-m-d H:i:s', strtotime($data['date_manufactured']))*/: null,
 		);
 		
-		$inserted = $wpdb->insert($table_name, $sql_data, array('%s', '%s', '%s', '%s', '%d'));
+		$inserted = $wpdb->insert($table_name, $sql_data, array('%s', '%s', '%s', '%s', '%d', '%s'));
 		return $inserted !== false;
 	}
 	

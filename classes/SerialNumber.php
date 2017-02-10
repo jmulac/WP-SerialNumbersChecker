@@ -95,10 +95,14 @@ class SerialNumber
 			'customer' => $this->getCustomerData('name', ""),
 			'product_model' => $this->getProductData('model', ""),
 			'state' => $this->state,
-			'ip_visited' => $this->ip_visited,
-			'date_visited' => $this->date_visited,
 			'date_manufactured' => $this->date_manufactured,
 		);
+		
+		if (!empty($this->date_visited))
+			$data['date_visited'] = $this->date_visited;
+		
+		if (!empty($this->ip_visited))
+			$data['ip_visited'] = $this->ip_visited;
 		
 		if ($this->id > 0)
 			return $this->adapter->update($this->id, $data);
