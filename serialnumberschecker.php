@@ -321,28 +321,24 @@ class SerialNumbersChecker
 		$data = $adapter->getAll();
 
 		$columns = array(
+			'NFC',
 			'Serial',
-			'Customer',
-			'Product Model',
+			'Helmet',
+			'Customer Name',
+			'Date of manufacture',
 			'State',
-			'Date Add',
-			'Date Visited',
-			'IP Visited',
-			'Date Manufactured',
 		);
 		
 		$csv_data = array();
 		foreach ($data as $values)
 		{
 			$csv_data[] = array(
+				"TODO",
 				$values['serial'],
-				$values['customer'],
 				$values['product_model'],
-				$values['state'],
-				$values['date_add'],
-				$values['date_visited'],
-				$values['ip_visited'],
+				$values['customer'],
 				isset($values['date_manufactured'])? $values['date_manufactured']: "",
+				$values['state'],
 			);
 		}
 		unset($data);
