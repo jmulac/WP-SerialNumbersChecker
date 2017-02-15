@@ -53,7 +53,7 @@ class SerialNumberTable extends \WP_List_Table
 		$search = isset($_POST['s'])? trim($_POST['s']): null;
 		
 		$this->items = $adapter->getAll($orderby, $index, self::$items_per_page, $search);
-		
+
 		$total_items = $adapter->count_no_limit;
 		
 		$this->set_pagination_args( array(
@@ -67,7 +67,7 @@ class SerialNumberTable extends \WP_List_Table
 		if (isset($item[$column_name]))
 			return $item[$column_name];
 		else
-			return print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
+			return "" ; // print_r( $item, true ) ; // Show the whole array for troubleshooting purposes
 	}
 	
 	public function get_sortable_columns()

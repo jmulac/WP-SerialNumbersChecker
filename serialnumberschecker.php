@@ -316,7 +316,10 @@ class SerialNumbersChecker
 	{
 		if (!isset($_GET['page']) || $_GET['page'] != 'serial_list' || !isset($_GET['action']) || $_GET['action'] != 'export')
 			return;
-		
+
+		$page_post_id = (int)get_option("snc_post_id", 0);
+		$page_url = ($page_post_id > 0)? get_permalink($page_post_id): "";
+
 		$adapter = new \serialnumberchecker\Adapter\SerialDatabase();
 		$data = $adapter->getAll();
 
@@ -332,8 +335,11 @@ class SerialNumbersChecker
 		$csv_data = array();
 		foreach ($data as $values)
 		{
+			if (!empty($page_url))
+				$serial_url = add_query_arg( 'serial', trim($values['serial']), $page_url);
+
 			$csv_data[] = array(
-				"TODO",
+				isset($serial_url)? $serial_url: "",
 				$values['serial'],
 				$values['product_model'],
 				$values['customer'],
