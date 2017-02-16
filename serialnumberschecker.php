@@ -258,8 +258,10 @@ class SerialNumbersChecker
 					
 					// State
 					$state = 1;
-					$state_row = isset($all_data[$serial][5])? $all_data[$serial][5]: "";
+					$state_row = isset($all_data[$serial][8])? $all_data[$serial][8]: "";
 					$state_row = trim($state_row);
+					if ($state_row == 'Valid')
+						$state_row = 1;
 					if ($state_row != "")
 						$state = (int)$state_row;
 					
@@ -290,7 +292,13 @@ class SerialNumbersChecker
 			// Add missing
 			foreach ($new_serials as $serial)
 			{
-				$state = isset($all_data[$serial][5])? (int)$all_data[$serial][5]: 1;
+				$state = 1;
+				$state_row = isset($all_data[$serial][8])? $all_data[$serial][8]: "";
+				$state_row = trim($state_row);
+				if ($state_row == 'Valid')
+					$state_row = 1;
+				if ($state_row != "")
+					$state = (int)$state_row;
 				
 				$tmp = array(
 					'serial' => $serial,
